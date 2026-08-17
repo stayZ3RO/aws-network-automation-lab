@@ -1,5 +1,15 @@
 # aws-network-automation-lab
 
+> **At a glance**
+> - **Problem:** translate the network segmentation I run on-prem (VLANs, subnets, firewall policy) into reviewable, tested AWS infrastructure-as-code.
+> - **Architecture:** a reusable `network` module (VPC, public/private subnets across AZs, IGW, routing, baseline security group) consumed by a `dev` environment; remote-state intent stubbed.
+> - **Tech:** OpenTofu/Terraform (HCL), Python, pytest, GitHub Actions.
+> - **Testing:** 10 pytest cases on the drift tool (pure logic + CLI); `tofu validate` on the IaC.
+> - **CI:** every push/PR runs `tofu fmt -check` + `validate` and `pytest` (green).
+> - **Security:** no credentials/state/tfvars committed (`*.example` only); baseline SG is deny-inbound/allow-egress.
+> - **What was actually run:** `tofu fmt`/`init -backend=false`/`validate` and the full pytest suite pass locally and in CI. **No cloud resources were applied** — this validates without an AWS account by design.
+> - **Limitations (honest):** this is a **lab**. It demonstrates AWS IaC authoring, module design, and CI-gated testing; it does **not** represent production/enterprise AWS operations, multi-account architecture, or IAM/governance at scale.
+
 AWS **networking-as-code** with a real CI gate and a small, tested Python network-automation tool. Built to close two specific, honestly-identified gaps between my homelab work and a Software Engineer II (platform / network automation) role:
 
 1. **AWS + Terraform hands-on.** My existing IaC (OpenTofu against Proxmox) proves lifecycle design and blast-radius discipline, but it isn't AWS. This repo is AWS, targeted.
