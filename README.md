@@ -1,0 +1,59 @@
+# aws-network-automation-lab
+
+AWS **networking-as-code** with a real CI gate and a small, tested Python network-automation tool. Built to close two specific, honestly-identified gaps between my homelab work and a Software Engineer II (platform / network automation) role:
+
+1. **AWS + Terraform hands-on.** My existing IaC (OpenTofu against Proxmox) proves lifecycle design and blast-radius discipline, but it isn't AWS. This repo is AWS, targeted.
+2. **Tested application code.** My other automation is Bash/utility scripting; this repo ships Python with `pytest` tests and CI, not just scripts.
+
+I picked *networking* on AWS on purpose — VPCs, subnets, routing, security groups. It's the same mental model I already run by hand at home (VLANs, subnets, firewall rules, HA DNS), expressed as reviewable code against a cloud provider.
+
+## What's here
+
+```
+iac/
+  modules/network/      reusable VPC/subnets/routing/SG module (not copy-pasted HCL)
+  environments/dev/     consumes the module — one place to plan/apply
+tools/
+  net-drift-check/      tested Python CLI: compares desired vs actual network state, exits non-zero on drift
+scripts/
+  ci-local.sh           the same checks CI runs, runnable locally
+.github/workflows/
+  ci.yml                fmt + validate (IaC) and pytest (tool) on every push/PR
+docs/
+  why-this-exists.md    the honest gap-to-evidence mapping
+```
+
+## The IaC
+
+A reusable `network` module (VPC, public + private subnets across AZs, internet gateway, route table, baseline deny-inbound/allow-egress security group) consumed by an `environments/dev` root. Terraform and OpenTofu both run this — `terraform` and `tofu` are drop-in for these files.
+
+```bash
+cd iac/environments/dev
+tofu fmt -recursive          # or terraform fmt
+tofu init -backend=false     # no AWS creds needed to validate
+tofu validate
+# tofu plan                  # needs AWS creds; free-tier friendly
+```
+
+`fmt`, `init -backend=false`, and `validate` need **no** AWS account, so the whole thing is CI-checkable and reviewable without ever spending a cent. `plan`/`apply` are the only steps that touch AWS.
+
+## The tool — net-drift-check
+
+A small network-automation CLI that reads a **desired** network state (subnets/CIDRs/DNS records in YAML) and an **actual** state, reports drift, and exits non-zero when they disagree — the kind of guardrail you'd wire into CI so infrastructure can't silently diverge from its definition.
+
+```bash
+cd tools/net-drift-check
+python3 -m pip install -r requirements.txt
+python3 netdrift.py --desired expected.example.yaml --actual actual.example.yaml
+python3 -m pytest -q          # tests
+```
+
+## CI
+
+`.github/workflows/ci.yml` runs on every push/PR: `tofu fmt -check` + `validate`, and `pytest` for the tool. `scripts/ci-local.sh` runs the identical checks locally (and a pre-commit hook can call it). If GitHub-hosted runners aren't available in a given org, the local script is the enforcement path — same pattern I use at work.
+
+## Honesty
+
+This is a lab, and it says so. It demonstrates AWS IaC authoring, reusable module design, remote-state intent, CI-gated infrastructure, and tested Python automation. It does **not** claim production AWS operations at scale. It's the bridge artifact between "I understand this" and "here's me doing it," and it's paired with a real homelab that already operates the on-prem equivalents.
+
+No credentials, account IDs, or state files are committed (`*.tfvars`, `*.tfstate`, `.env` are gitignored; only `*.example` is tracked).

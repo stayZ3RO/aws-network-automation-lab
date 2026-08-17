@@ -1,0 +1,11 @@
+subnets:
+  - 10.30.0.0/24
+  - 10.30.1.0/24
+  - 10.30.10.0/24
+  # 10.30.11.0/24 is missing here — the tool will flag it as drift
+
+dns_records:
+  gw.lab: 10.30.0.1
+  dns.lab: 10.30.0.99        # value changed — flagged as changed_dns
+  monitor.lab: 10.30.10.20
+  rogue.lab: 10.30.10.66     # unexpected record — flagged as unexpected_dns
