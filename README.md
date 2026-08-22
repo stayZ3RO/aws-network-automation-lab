@@ -7,7 +7,7 @@
 > - **Testing:** 10 pytest cases on the drift tool (pure logic + CLI); `tofu validate` on the IaC.
 > - **CI:** every push/PR runs `tofu fmt -check` + `validate` and `pytest` (green).
 > - **Security:** no credentials/state/tfvars committed (`*.example` only); baseline SG is deny-inbound/allow-egress.
-> - **What was actually run:** `tofu fmt`/`init -backend=false`/`validate` and the full pytest suite pass locally and in CI. **No cloud resources were applied** — this validates without an AWS account by design.
+> - **What was actually run:** Locally, `tofu fmt`, `init -backend=false`, `validate`, and the full pytest suite pass. CI runs formatting/validation checks and the pytest suite on every push and pull request. No cloud resources were applied.
 > - **Limitations (honest):** this is a **lab**. It demonstrates AWS IaC authoring, module design, and CI-gated testing; it does **not** represent production/enterprise AWS operations, multi-account architecture, or IAM/governance at scale.
 
 AWS **networking-as-code** with a real CI gate and a small, tested Python network-automation tool. Built to close two specific, honestly-identified gaps between my homelab work and a Software Engineer II (platform / network automation) role:
