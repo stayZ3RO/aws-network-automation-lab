@@ -13,7 +13,7 @@ This lab exists to close two specific, honestly-identified gaps between my homel
 
 ## What it honestly does NOT claim
 
-- Production AWS operations at scale. This is free-tier-shaped lab work.
+- Production AWS operations at scale. This is a small-scale learning lab.
 - That the drift tool is a product. It's a focused, tested utility that demonstrates clean Python + testing + a network-automation instinct.
 - Kubernetes/GitOps. Out of scope here; tracked separately in the homelab roadmap.
 
