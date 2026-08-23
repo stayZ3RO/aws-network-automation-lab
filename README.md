@@ -4,7 +4,7 @@
 > - **Problem:** translate the network segmentation I run on-prem (VLANs, subnets, firewall policy) into reviewable, tested AWS infrastructure-as-code.
 > - **Architecture:** a reusable `network` module (VPC, public/private subnets across AZs, IGW, routing, baseline security group) consumed by a `dev` environment; remote-state intent stubbed.
 > - **Tech:** OpenTofu/Terraform (HCL), Python, pytest, GitHub Actions.
-> - **Testing:** 10 pytest cases on the drift tool (pure logic + CLI); `tofu validate` on the IaC.
+> - **Testing:** 101 pytest cases on the drift tool (pure logic + CLI, including security-group rule drift); `tofu validate` on the IaC.
 > - **CI:** every push/PR runs `tofu fmt -check` + `validate` and `pytest` (green).
 > - **Security:** no credentials/state/tfvars committed (`*.example` only); baseline SG is deny-inbound/allow-egress.
 > - **What was actually run:** Locally, `tofu fmt`, `init -backend=false`, `validate`, and the full pytest suite pass. CI runs formatting/validation checks and the pytest suite on every push and pull request. No cloud resources were applied.
@@ -49,7 +49,7 @@ tofu validate
 
 ## The tool — net-drift-check
 
-A small network-automation CLI that reads a **desired** network state (subnets/CIDRs/DNS records in YAML) and an **actual** state, reports drift, and exits non-zero when they disagree — the kind of guardrail you'd wire into CI so infrastructure can't silently diverge from its definition.
+A small network-automation CLI that reads a **desired** network state (subnets, CIDRs, DNS records, and optional security-group rules in YAML) and an **actual** state, reports drift, and exits non-zero when they disagree — the kind of guardrail you'd wire into CI so infrastructure can't silently diverge from its definition.
 
 ```bash
 cd tools/net-drift-check
