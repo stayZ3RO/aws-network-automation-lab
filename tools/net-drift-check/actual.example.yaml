@@ -9,3 +9,24 @@ dns_records:
   dns.lab: 10.30.0.99        # value changed — flagged as changed_dns
   monitor.lab: 10.30.10.20
   rogue.lab: 10.30.10.66     # unexpected record — flagged as unexpected_dns
+
+security_groups:
+  web-sg:
+    # egress listed first here (order doesn't matter — rules compare as a set)
+    - direction: egress
+      protocol: tcp
+      from_port: 0
+      to_port: 65535
+      cidr: 0.0.0.0/0
+    - direction: ingress        # unexpected: SSH open to the world, not in desired
+      protocol: tcp
+      from_port: 22
+      to_port: 22
+      cidr: 0.0.0.0/0
+    # missing: the desired 443/tcp ingress rule is absent here — flagged as missing_sg_rules
+  db-sg:
+    - direction: ingress
+      protocol: tcp
+      from_port: 5432
+      to_port: 5432
+      cidr: 10.30.0.0/24

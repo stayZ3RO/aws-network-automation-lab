@@ -8,3 +8,22 @@ dns_records:
   gw.lab: 10.30.0.1
   dns.lab: 10.30.0.2
   monitor.lab: 10.30.10.20
+
+security_groups:
+  web-sg:
+    - direction: ingress
+      protocol: tcp
+      from_port: 443
+      to_port: 443
+      cidr: 0.0.0.0/0
+    - direction: egress
+      protocol: tcp
+      from_port: 0
+      to_port: 65535
+      cidr: 0.0.0.0/0
+  db-sg:
+    - direction: ingress
+      protocol: tcp
+      from_port: 5432
+      to_port: 5432
+      cidr: 10.30.0.0/24
