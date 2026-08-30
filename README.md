@@ -62,6 +62,13 @@ python3 -m pytest -q          # tests
 
 `.github/workflows/ci.yml` runs on every push/PR: `tofu fmt -check` + `validate`, and `pytest` for the tool. `scripts/ci-local.sh` runs the identical checks locally (and a pre-commit hook can call it). If GitHub-hosted runners aren't available in a given org, the local script is the enforcement path — same pattern I use at work.
 
+## Evidence still needed
+
+Unlike the on-prem repos, this one has no screenshots yet — it's more
+CLI/IaC-native. Before writing it up publicly, capture: a passing GitHub
+Actions CI run, `net-drift-check` CLI output showing detected drift, and
+the AWS console VPC view.
+
 ## Honesty
 
 This is a lab, and it says so. It demonstrates AWS IaC authoring, reusable module design, remote-state intent, CI-gated infrastructure, and tested Python automation. It does **not** claim production AWS operations at scale. It's the bridge artifact between "I understand this" and "here's me doing it," and it's paired with a real homelab that already operates the on-prem equivalents.
