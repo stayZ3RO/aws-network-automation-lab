@@ -1,4 +1,4 @@
-# aws-network-automation-lab
+# cloud-netlab
 
 > **At a glance**
 > - **Problem:** translate the network segmentation I run on-prem (VLANs, subnets, firewall policy) into reviewable, tested AWS infrastructure-as-code.
