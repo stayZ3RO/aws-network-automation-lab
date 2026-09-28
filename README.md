@@ -15,14 +15,14 @@ AWS **networking-as-code** with a real CI gate and a small, tested Python networ
 1. **AWS + Terraform hands-on.** My existing IaC (OpenTofu against Proxmox) proves lifecycle design and blast-radius discipline, but it isn't AWS. This repo is AWS, targeted.
 2. **Tested application code.** My other automation is Bash/utility scripting; this repo ships Python with `pytest` tests and CI, not just scripts.
 
-I picked *networking* on AWS on purpose — VPCs, subnets, routing, security groups. It's the same mental model I already run by hand at home (VLANs, subnets, firewall rules, HA DNS), expressed as reviewable code against a cloud provider.
+I picked *networking* on AWS on purpose: VPCs, subnets, routing, security groups. It's the same mental model I already run by hand at home (VLANs, subnets, firewall rules, HA DNS), expressed as reviewable code against a cloud provider.
 
 ## What's here
 
 ```
 iac/
   modules/network/      reusable VPC/subnets/routing/SG module (not copy-pasted HCL)
-  environments/dev/     consumes the module — one place to plan/apply
+  environments/dev/     consumes the module; one place to plan/apply
 tools/
   net-drift-check/      tested Python CLI: compares desired vs actual network state, exits non-zero on drift
 scripts/
@@ -35,7 +35,7 @@ docs/
 
 ## The IaC
 
-A reusable `network` module (VPC, public + private subnets across AZs, internet gateway, route table, baseline deny-inbound/allow-egress security group) consumed by an `environments/dev` root. Terraform and OpenTofu both run this — `terraform` and `tofu` are drop-in for these files.
+A reusable `network` module (VPC, public + private subnets across AZs, internet gateway, route table, baseline deny-inbound/allow-egress security group) consumed by an `environments/dev` root. Terraform and OpenTofu both run this: `terraform` and `tofu` are drop-in for these files.
 
 ```bash
 cd iac/environments/dev
@@ -47,9 +47,9 @@ tofu validate
 
 `fmt`, `init -backend=false`, and `validate` need **no** AWS account, so the whole thing is CI-checkable and reviewable without ever spending a cent. `plan`/`apply` are the only steps that touch AWS.
 
-## The tool — net-drift-check
+## The tool: net-drift-check
 
-A small network-automation CLI that reads a **desired** network state (subnets, CIDRs, DNS records, and optional security-group rules in YAML) and an **actual** state, reports drift, and exits non-zero when they disagree — the kind of guardrail you'd wire into CI so infrastructure can't silently diverge from its definition.
+A small network-automation CLI that reads a **desired** network state (subnets, CIDRs, DNS records, and optional security-group rules in YAML) and an **actual** state, reports drift, and exits non-zero when they disagree. It's the kind of guardrail you'd wire into CI so infrastructure can't silently diverge from its definition.
 
 ```bash
 cd tools/net-drift-check
@@ -60,11 +60,11 @@ python3 -m pytest -q          # tests
 
 ## CI
 
-`.github/workflows/ci.yml` runs on every push/PR: `tofu fmt -check` + `validate`, and `pytest` for the tool. `scripts/ci-local.sh` runs the identical checks locally (and a pre-commit hook can call it). If GitHub-hosted runners aren't available in a given org, the local script is the enforcement path — same pattern I use at work.
+`.github/workflows/ci.yml` runs on every push/PR: `tofu fmt -check` + `validate`, and `pytest` for the tool. `scripts/ci-local.sh` runs the identical checks locally (and a pre-commit hook can call it). If GitHub-hosted runners aren't available in a given org, the local script is the enforcement path, the same pattern I use at work.
 
 ## Evidence still needed
 
-Unlike the on-prem repos, this one has no screenshots yet — it's more
+Unlike the on-prem repos, this one has no screenshots yet, because it's more
 CLI/IaC-native. Before writing it up publicly, capture: a passing GitHub
 Actions CI run, `net-drift-check` CLI output showing detected drift, and
 the AWS console VPC view.
