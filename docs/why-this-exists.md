@@ -1,6 +1,6 @@
 # Why this repo exists
 
-This lab exists to close two specific, honestly-identified gaps between my homelab/ops work and a Software Engineer II (platform / network automation) role. It is deliberately small and deliberately real, a bridge artifact, not a résumé prop.
+This lab exists to close two specific, honestly-identified gaps between my homelab and operations work and a Software Engineer II (platform / network automation) role. It is deliberately small and deliberately real, a bridge artifact, not a résumé prop.
 
 ## The gaps it closes
 
@@ -21,4 +21,4 @@ This lab exists to close two specific, honestly-identified gaps between my homel
 
 The on-prem equivalents already run in my homelab: VLAN/subnet segmentation, HA DNS, firewall policy, drift/pre-build validation. This repo expresses that same thinking as AWS code with tests and CI, the exact translation the role is asking for.
 
-See the full evidence audit and positioning in my private career notes (`wf-cl-meta/career/homelab-evidence-audit-and-positioning.md`).
+See the full evidence audit and positioning in my private career notes.
