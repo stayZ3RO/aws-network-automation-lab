@@ -5,4 +5,4 @@ version control, and can be edited without a drawing tool.
 
 | Diagram | Description |
 |---|---|
-| [`network` module + drift check](vpc-module.md) | VPC / subnets / IGW / routing / baseline SG, and how the Python drift-check CLI verifies live state against the Terraform declaration |
+| [`network` module + drift check](vpc-module.md) | VPC / subnets / IGW / routing / baseline SG, and a Python CLI that compares supplied expected and actual YAML snapshots without AWS API calls |

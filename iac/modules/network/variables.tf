@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name prefix applied to all network resources (e.g. \"stayz3ro-dev\")."
+  description = "Name prefix applied to all network resources (e.g. \"cloud-netlab-dev\")."
   type        = string
 }
 

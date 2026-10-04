@@ -3,7 +3,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project = "aws-network-automation-lab"
+      Project = "cloud-netlab"
       Env     = "dev"
       Owner   = "stayz3ro"
     }
