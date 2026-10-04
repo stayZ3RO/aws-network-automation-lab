@@ -40,5 +40,5 @@ flowchart TB
 
 **OpenTofu / Terraform · consumed by `environments/dev` · no cloud
 resources applied.** Subnet count is driven by the `azs` /
-`public_subnet_cidrs` / `private_subnet_cidrs` variables, two AZs shown
-here is the `dev` default, not a module limit.
+`public_subnet_cidrs` / `private_subnet_cidrs` variables. The two AZs shown
+here are the `dev` default, not a module limit.

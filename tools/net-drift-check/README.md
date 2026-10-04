@@ -1,6 +1,6 @@
 # net-drift-check
 
-A small, tested network-automation CLI. It compares a **desired** network state (subnets, DNS records, and optional security-group rules) to an **actual** one and exits non-zero on drift, the kind of guardrail you wire into CI so infrastructure can't quietly diverge from its definition.
+A small, tested network-automation CLI. It compares a **desired** network state (subnets, DNS records, and optional security-group rules) to an **actual** one and exits non-zero on drift. It is the kind of guardrail you wire into CI so infrastructure can't quietly diverge from its definition.
 
 This is deliberately the same idea as the drift/validation discipline I run in my homelab (pre-build "is this subnet/IP free?" checks, config baselines), but here it's real Python with tests instead of shell one-offs.
 
@@ -47,17 +47,17 @@ Rules accept exactly `direction`, `protocol`, `from_port`, `to_port`, and `cidr`
 
 For backward compatibility, JSON output retains the original five fields when neither input contains `security_groups`. If either input supplies that key, even as an empty mapping, the JSON report also includes `missing_sg_rules` and `unexpected_sg_rules`.
 
-As with subnets and DNS records, this operates purely on the two YAML documents you hand it, it does not query or modify AWS, and no cloud infrastructure was applied to build or test this feature.
+As with subnets and DNS records, this operates purely on the two YAML documents you hand it. It does not query or modify AWS, and no cloud infrastructure was applied to build or test this feature.
 
 ## Design notes
 
-- CIDRs are **normalized** (`ipaddress`), so `10.30.0.5/24` and `10.30.0.0/24` compare equal by network, cosmetic host-bit differences aren't false-positive drift.
+- CIDRs are **normalized** (`ipaddress`), so `10.30.0.5/24` and `10.30.0.0/24` compare equal by network. Cosmetic host-bit differences aren't false-positive drift.
 - The comparison is pure and returns a structured `DriftReport`; the CLI is a thin wrapper. That separation is what makes it easy to test and easy to embed in a pipeline.
 - `--json` emits machine-readable output for CI consumption.
 - Exit codes: `0` no drift, `1` drift, `2` usage/input error.
 
 ## Fundamentals: why compare firewall rules this way
 
-- **Sets, not lists.** A security group's rules have no meaningful order, a firewall enforces them all, not in list-position order. Comparing as an ordered list would report drift every time someone re-orders the same rules. Comparing normalized identities as a set also deliberately collapses duplicate copies of one rule.
+- **Sets, not lists.** A security group's rules have no meaningful order. A firewall enforces them all, not in list-position order. Comparing as an ordered list would report drift every time someone re-orders the same rules. Comparing normalized identities as a set also deliberately collapses duplicate copies of one rule.
 - **Direction, protocol, protocol-specific ports, and CIDR matter together.** `ingress tcp 443-443 0.0.0.0/0` and `egress tcp 443-443 0.0.0.0/0` have opposite security implications. ICMP fields are type/code rather than an ordered range, while all-protocol port values are ignored because AWS ignores them.
 - **Deterministic normalization is what makes this usable in CI.** `protocol: TCP` vs `tcp`, `all` vs `-1`, or a CIDR written with stray host bits are cosmetically different but semantically identical. Normalizing once, up front, lets `compare()` remain a pure function and keeps reports byte-for-byte reproducible.
