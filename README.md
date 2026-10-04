@@ -1,7 +1,7 @@
 # cloud-netlab
 
 > **At a glance**
-> - **Problem:** translate the network segmentation I run on-prem (VLANs, subnets, firewall policy) into reviewable, tested AWS infrastructure-as-code.
+> - **Problem:** explore network segmentation as reviewable, tested AWS infrastructure-as-code. The current home network is a flat UniFi LAN; VLAN and firewall segmentation are planned.
 > - **Architecture:** a reusable `network` module (VPC, public/private subnets across AZs, IGW, routing, baseline security group) consumed by a `dev` environment; remote-state intent stubbed.
 > - **Tech:** OpenTofu/Terraform (HCL), Python, pytest, GitHub Actions.
 > - **Testing:** 101 pytest cases on the drift tool (pure logic + CLI, including security-group rule drift); `tofu validate` on the IaC.
@@ -15,7 +15,7 @@ AWS **networking-as-code** with a real CI gate and a small, tested Python networ
 1. **AWS + Terraform hands-on.** My existing IaC (OpenTofu against Proxmox) proves lifecycle design and blast-radius discipline, but it isn't AWS. This repo is AWS, targeted.
 2. **Tested application code.** My other automation is Bash/utility scripting; this repo ships Python with `pytest` tests and CI, not just scripts.
 
-I picked *networking* on AWS on purpose: VPCs, subnets, routing, security groups. It's the same mental model I already run by hand at home (VLANs, subnets, firewall rules, HA DNS), expressed as reviewable code against a cloud provider.
+I picked *networking* on AWS on purpose: VPCs, subnets, routing, security groups. My home network currently runs on a UDM Pro and USW-24-PoE with a flat LAN. VLAN and firewall segmentation are planned there; this AWS lab explores those design questions without claiming they are deployed at home or in AWS.
 
 ## What's here
 
@@ -51,6 +51,8 @@ tofu validate
 
 A small network-automation CLI that reads a **desired** network state (subnets, CIDRs, DNS records, and optional security-group rules in YAML) and an **actual** state, reports drift, and exits non-zero when they disagree. It's the kind of guardrail you'd wire into CI so infrastructure can't silently diverge from its definition.
 
+Both inputs are supplied YAML snapshots. The CLI makes no AWS API calls and does not inspect deployed resources.
+
 ```bash
 cd tools/net-drift-check
 python3 -m pip install -r requirements.txt
@@ -62,15 +64,14 @@ python3 -m pytest -q          # tests
 
 `.github/workflows/ci.yml` runs on every push/PR: `tofu fmt -check` + `validate`, and `pytest` for the tool. `scripts/ci-local.sh` runs the identical checks locally (and a pre-commit hook can call it). If GitHub-hosted runners aren't available in a given org, the local script is the enforcement path, the same pattern I use at work.
 
-## Evidence still needed
+## Evidence
 
-Unlike the on-prem repos, this one has no screenshots yet, because it's more
-CLI/IaC-native. Before writing it up publicly, capture: a passing GitHub
-Actions CI run, `net-drift-check` CLI output showing detected drift, and
-the AWS console VPC view.
+The example command above reports a missing subnet, changed DNS, and security-group rule drift, then exits 1. [Main branch CI passed on 2026-09-28](https://github.com/stayZ3RO/cloud-netlab/actions/runs/36368451393). AWS console evidence would apply only after a future deployment; no cloud resources have been applied.
 
 ## Honesty
 
-This is a lab, and it says so. It demonstrates AWS IaC authoring, reusable module design, remote-state intent, CI-gated infrastructure, and tested Python automation. It does **not** claim production AWS operations at scale. It's the bridge artifact between "I understand this" and "here's me doing it," and it's paired with a real homelab that already operates the on-prem equivalents.
+This is a lab, and it says so. It demonstrates AWS IaC authoring, reusable module design, remote-state intent, CI-gated infrastructure, and tested Python automation. It does **not** claim production AWS operations at scale. The live homelab is separate; this AWS design has not been deployed.
 
 No credentials, account IDs, or state files are committed (`*.tfvars`, `*.tfstate`, `.env` are gitignored; only `*.example` is tracked).
+
+More projects: [portfolio](https://chrisalorenzo.com/).
